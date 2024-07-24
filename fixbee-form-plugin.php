@@ -24,10 +24,23 @@ require_once FIXBEE_PLUGIN_DIR . 'includes/metaboxes.php';
 
 // Enqueue scripts and styles
 function fixbee_enqueue_scripts() {
+    // Enqueue the CSS file
     wp_enqueue_style('fixbee-form-style', FIXBEE_PLUGIN_URL . 'assets/css/form.css');
+
+    // Enqueue other JavaScript files if they contain additional functionality
     wp_enqueue_script('fixbee-form-script', FIXBEE_PLUGIN_URL . 'assets/js/form.js', array('jquery'), null, true);
+
+    // Enqueue the multistep form JavaScript file
+    wp_enqueue_script('fixbee-multistep-form', plugin_dir_url(__FILE__) . 'assets/js/multistep-form.js', array('jquery'), null, true);
+
+    // Localize script to pass PHP variables to JavaScript
+    wp_localize_script('fixbee-multistep-form', 'fixbee_multistep_form_vars', array(
+        'stepUrl' => esc_url(get_option('fixbee_multistep_form_url', '/form-steps')),
+        'zip' => isset($_SESSION['fixbee_zip']) ? $_SESSION['fixbee_zip'] : '',
+    ));
 }
 add_action('wp_enqueue_scripts', 'fixbee_enqueue_scripts');
+
 
 // Add admin menu item for viewing entries
 function fixbee_add_admin_menu() {
@@ -120,10 +133,10 @@ function fixbee_display_form_entries() {
 function fixbee_add_settings_page() {
     add_submenu_page(
         'fixbee-form-entries',
-        'Email Settings',
-        'Email Settings',
+        'Form Settings',
+        'Form Settings',
         'manage_options',
-        'fixbee-email-settings',
+        'fixbee-form-settings',
         'fixbee_display_settings_page'
     );
 }
@@ -132,11 +145,11 @@ add_action('admin_menu', 'fixbee_add_settings_page');
 function fixbee_display_settings_page() {
     ?>
     <div class="wrap">
-        <h1>Email Settings</h1>
+        <h1>Form Settings</h1>
         <form method="post" action="options.php">
             <?php
-            settings_fields('fixbee_email_settings');
-            do_settings_sections('fixbee-email-settings');
+            settings_fields('fixbee_form_settings');
+            do_settings_sections('fixbee-form-settings');
             submit_button();
             ?>
         </form>
@@ -144,23 +157,32 @@ function fixbee_display_settings_page() {
     <?php
 }
 
-// Register settings for email recipient
+// Register settings for form URL and email recipient
 function fixbee_register_settings() {
-    register_setting('fixbee_email_settings', 'fixbee_admin_email', 'sanitize_email');
+    register_setting('fixbee_form_settings', 'fixbee_admin_email', 'sanitize_email');
+    register_setting('fixbee_form_settings', 'fixbee_multistep_form_url', 'sanitize_text_field');
 
     add_settings_section(
-        'fixbee_email_settings_section',
-        'Email Notification Settings',
+        'fixbee_form_settings_section',
+        'Form Settings',
         null,
-        'fixbee-email-settings'
+        'fixbee-form-settings'
     );
 
     add_settings_field(
         'fixbee_admin_email',
         'Admin Email',
         'fixbee_email_settings_field_callback',
-        'fixbee-email-settings',
-        'fixbee_email_settings_section'
+        'fixbee-form-settings',
+        'fixbee_form_settings_section'
+    );
+
+    add_settings_field(
+        'fixbee_multistep_form_url',
+        'Multistep Form URL',
+        'fixbee_multistep_form_url_field_callback',
+        'fixbee-form-settings',
+        'fixbee_form_settings_section'
     );
 }
 add_action('admin_init', 'fixbee_register_settings');
@@ -168,4 +190,9 @@ add_action('admin_init', 'fixbee_register_settings');
 function fixbee_email_settings_field_callback() {
     $email = get_option('fixbee_admin_email', get_option('admin_email'));
     echo '<input type="email" id="fixbee_admin_email" name="fixbee_admin_email" value="' . esc_attr($email) . '" size="25" />';
+}
+
+function fixbee_multistep_form_url_field_callback() {
+    $multistep_form_url = get_option('fixbee_multistep_form_url', '/form-steps');
+    echo '<input type="text" id="fixbee_multistep_form_url" name="fixbee_multistep_form_url" value="' . esc_attr($multistep_form_url) . '" size="25" />';
 }

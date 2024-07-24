@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <form id="fixbee-step1-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
     <input type="hidden" name="action" value="fixbee_step1">
     <label for="category">Choose your category</label>

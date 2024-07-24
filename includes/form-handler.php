@@ -2,7 +2,7 @@
 // Handle Step 1 form submission
 function fixbee_handle_step1() {
     if (!isset($_POST['category']) || !isset($_POST['zip'])) {
-        wp_redirect(home_url('/step1'));
+        wp_redirect(home_url('/'));
         exit;
     }
 
@@ -10,51 +10,19 @@ function fixbee_handle_step1() {
     $_SESSION['fixbee_category'] = sanitize_text_field($_POST['category']);
     $_SESSION['fixbee_zip'] = sanitize_text_field($_POST['zip']);
 
-    wp_redirect(home_url('/step2'));
+    $multistep_form_url = get_option('fixbee_multistep_form_url', '/form-steps'); // Get the customizable URL for the multistep form page
+
+    wp_redirect(home_url($multistep_form_url));
     exit;
 }
 add_action('admin_post_fixbee_step1', 'fixbee_handle_step1');
 add_action('admin_post_nopriv_fixbee_step1', 'fixbee_handle_step1');
 
-// Handle Step 2 form submission
-function fixbee_handle_step2() {
-    if (!isset($_POST['company']) || !isset($_POST['full_name']) || !isset($_POST['phone']) || !isset($_POST['email'])) {
-        wp_redirect(home_url('/step2'));
-        exit;
-    }
 
-    session_start();
-    $_SESSION['fixbee_company'] = sanitize_text_field($_POST['company']);
-    $_SESSION['fixbee_full_name'] = sanitize_text_field($_POST['full_name']);
-    $_SESSION['fixbee_phone'] = sanitize_text_field($_POST['phone']);
-    $_SESSION['fixbee_email'] = sanitize_email($_POST['email']);
-
-    wp_redirect(home_url('/step3'));
-    exit;
-}
-add_action('admin_post_fixbee_step2', 'fixbee_handle_step2');
-add_action('admin_post_nopriv_fixbee_step2', 'fixbee_handle_step2');
-
-// Handle Step 3 form submission
-function fixbee_handle_step3() {
-    if (!isset($_POST['services'])) {
-        wp_redirect(home_url('/step3'));
-        exit;
-    }
-
-    session_start();
-    $_SESSION['fixbee_services'] = array_map('sanitize_text_field', $_POST['services']);
-
-    wp_redirect(home_url('/step4'));
-    exit;
-}
-add_action('admin_post_fixbee_step3', 'fixbee_handle_step3');
-add_action('admin_post_nopriv_fixbee_step3', 'fixbee_handle_step3');
-
-// Handle Step 4 form submission
-function fixbee_handle_step4() {
-    if (!isset($_POST['travel_radius'])) {
-        wp_redirect(home_url('/step4'));
+// Handle combined form submission for steps 2-4
+function fixbee_handle_multistep_form() {
+    if (!isset($_POST['category']) || !isset($_POST['zip']) || !isset($_POST['company']) || !isset($_POST['full_name']) || !isset($_POST['phone']) || !isset($_POST['email']) || !isset($_POST['services']) || !isset($_POST['travel_radius'])) {
+        wp_redirect(home_url('/form-steps'));
         exit;
     }
 
@@ -68,7 +36,7 @@ function fixbee_handle_step4() {
         'full_name' => sanitize_text_field($_POST['full_name']),
         'phone' => sanitize_text_field($_POST['phone']),
         'email' => sanitize_email($_POST['email']),
-        'services' => sanitize_text_field($_POST['services']),
+        'services' => sanitize_text_field(implode(',', $_POST['services'])),
         'travel_radius' => intval($_POST['travel_radius']),
     );
 
@@ -86,7 +54,7 @@ function fixbee_handle_step4() {
     wp_redirect(home_url('/thank-you'));
     exit;
 }
-add_action('admin_post_fixbee_step4', 'fixbee_handle_step4');
-add_action('admin_post_nopriv_fixbee_step4', 'fixbee_handle_step4');
+add_action('admin_post_fixbee_multistep_form', 'fixbee_handle_multistep_form');
+add_action('admin_post_nopriv_fixbee_multistep_form', 'fixbee_handle_multistep_form');
 
 

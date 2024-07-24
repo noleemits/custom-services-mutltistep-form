@@ -1,0 +1,33 @@
+/* General form styling */
+form {
+    margin: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input, select, button {
+    display: block;
+    margin-bottom: 15px;
+    padding: 8px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.step {
+    margin-bottom: 20px;
+}
+
+button.next-step-button {
+    background-color: #0073aa;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button.next-step-button:hover {
+    background-color: #005885;
+}
