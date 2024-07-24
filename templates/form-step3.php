@@ -1,3 +1,11 @@
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+session_start();
+?>
+
 <form id="fixbee-step3-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
     <input type="hidden" name="action" value="fixbee_step3">
     <input type="hidden" name="category" value="<?php echo esc_attr($_SESSION['fixbee_category']); ?>">
@@ -15,7 +23,9 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM fully loaded and parsed');
         const container = document.getElementById('service-categories-container');
+        console.log('Container:', container);
 
         if (container) {
             fetch('/wp-json/fixbee/v1/services_by_category')
@@ -34,6 +44,7 @@
         }
 
         function displayServices(data, container) {
+            console.log('Displaying services'); // Debug message
             container.innerHTML = ''; // Clear any existing content
 
             data.forEach(category => {
@@ -82,4 +93,3 @@
         });
     });
 </script>
-
