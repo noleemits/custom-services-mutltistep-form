@@ -35,3 +35,19 @@ function fixbee_handle_step2() {
 }
 add_action('admin_post_fixbee_step2', 'fixbee_handle_step2');
 add_action('admin_post_nopriv_fixbee_step2', 'fixbee_handle_step2');
+
+// Handle Step 3 form submission
+function fixbee_handle_step3() {
+    if (!isset($_POST['services'])) {
+        wp_redirect(home_url('/page3'));
+        exit;
+    }
+
+    session_start();
+    $_SESSION['fixbee_services'] = array_map('sanitize_text_field', $_POST['services']);
+
+    wp_redirect(home_url('/page4'));
+    exit;
+}
+add_action('admin_post_fixbee_step3', 'fixbee_handle_step3');
+add_action('admin_post_nopriv_fixbee_step3', 'fixbee_handle_step3');
