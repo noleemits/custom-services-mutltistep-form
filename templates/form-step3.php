@@ -15,20 +15,26 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        fetch('/wp-json/fixbee/v1/services_by_category')
-            .then(response => response.json())
-            .then(data => {
-                console.log(data); // Log the response for debugging
-                if (Array.isArray(data)) {
-                    displayServices(data);
-                } else {
-                    console.error('Expected an array but got:', data);
-                }
-            })
-            .catch(error => console.error('Error fetching services:', error));
+        const container = document.getElementById('service-categories-container');
 
-        function displayServices(data) {
-            const container = document.getElementById('service-categories-container');
+        if (container) {
+            fetch('/wp-json/fixbee/v1/services_by_category')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Log the response for debugging
+                    if (Array.isArray(data)) {
+                        displayServices(data, container);
+                    } else {
+                        console.error('Expected an array but got:', data);
+                    }
+                })
+                .catch(error => console.error('Error fetching services:', error));
+        } else {
+            console.error('Container element not found');
+        }
+
+        function displayServices(data, container) {
+            container.innerHTML = ''; // Clear any existing content
 
             data.forEach(category => {
                 const categoryDiv = document.createElement('div');
@@ -76,3 +82,4 @@
         });
     });
 </script>
+
