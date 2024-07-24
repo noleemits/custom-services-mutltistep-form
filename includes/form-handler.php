@@ -51,3 +51,32 @@ function fixbee_handle_step3() {
 }
 add_action('admin_post_fixbee_step3', 'fixbee_handle_step3');
 add_action('admin_post_nopriv_fixbee_step3', 'fixbee_handle_step3');
+
+// Handle Step 4 form submission
+function fixbee_handle_step4() {
+    if (!isset($_POST['travel_radius'])) {
+        wp_redirect(home_url('/page4'));
+        exit;
+    }
+
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'service_entries';
+
+    $data = array(
+        'category' => sanitize_text_field($_POST['category']),
+        'zip' => sanitize_text_field($_POST['zip']),
+        'company' => sanitize_text_field($_POST['company']),
+        'full_name' => sanitize_text_field($_POST['full_name']),
+        'phone' => sanitize_text_field($_POST['phone']),
+        'email' => sanitize_email($_POST['email']),
+        'services' => sanitize_text_field($_POST['services']),
+        'travel_radius' => intval($_POST['travel_radius']),
+    );
+
+    $wpdb->insert($table_name, $data);
+
+    wp_redirect(home_url('/thank-you'));
+    exit;
+}
+add_action('admin_post_fixbee_step4', 'fixbee_handle_step4');
+add_action('admin_post_nopriv_fixbee_step4', 'fixbee_handle_step4');
