@@ -1,6 +1,5 @@
 <?php
 // Handle Step 1 form submission
-// Handle Step 1 form submission
 function fixbee_handle_step1() {
     if (!isset($_POST['category']) || !isset($_POST['zip'])) {
         wp_redirect(home_url('/step1'));
@@ -75,8 +74,19 @@ function fixbee_handle_step4() {
 
     $wpdb->insert($table_name, $data);
 
+    // Send email notification
+    $admin_email = get_option('fixbee_admin_email', get_option('admin_email'));
+    $subject = 'New Form Entry Submitted';
+    $message = "A new form entry has been submitted:\n\n";
+    foreach ($data as $key => $value) {
+        $message .= ucfirst(str_replace('_', ' ', $key)) . ": $value\n";
+    }
+    wp_mail($admin_email, $subject, $message);
+
     wp_redirect(home_url('/thank-you'));
     exit;
 }
 add_action('admin_post_fixbee_step4', 'fixbee_handle_step4');
 add_action('admin_post_nopriv_fixbee_step4', 'fixbee_handle_step4');
+
+

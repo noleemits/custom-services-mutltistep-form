@@ -1,10 +1,11 @@
 <?php
+// Add metabox for configuring email recipient
 function fixbee_add_meta_boxes() {
     add_meta_box(
-        'fixbee_texts',
-        'fixbee Form Texts',
+        'fixbee_email_recipient',
+        'Email Recipient',
         'fixbee_render_meta_box',
-        'page',
+        'settings_page_fixbee-form-entries', // Display this metabox on the settings page
         'normal',
         'high'
     );
@@ -13,19 +14,14 @@ add_action('add_meta_boxes', 'fixbee_add_meta_boxes');
 
 function fixbee_render_meta_box($post) {
     wp_nonce_field('fixbee_save_meta_box_data', 'fixbee_meta_box_nonce');
-    
-    $texts = get_post_meta($post->ID, '_fixbee_texts', true);
-    
-    echo '<label for="fixbee_text">Text:</label>';
-    echo '<input type="text" id="fixbee_text" name="fixbee_text" value="' . esc_attr($texts) . '" size="25" />';
+    $email = get_option('fixbee_admin_email', get_option('admin_email'));
+
+    echo '<label for="fixbee_admin_email">Admin Email:</label>';
+    echo '<input type="email" id="fixbee_admin_email" name="fixbee_admin_email" value="' . esc_attr($email) . '" size="25" />';
 }
 
 function fixbee_save_meta_box_data($post_id) {
-    if (!isset($_POST['fixbee_meta_box_nonce'])) {
-        return;
-    }
-
-    if (!wp_verify_nonce($_POST['fixbee_meta_box_nonce'], 'fixbee_save_meta_box_data')) {
+    if (!isset($_POST['fixbee_meta_box_nonce']) || !wp_verify_nonce($_POST['fixbee_meta_box_nonce'], 'fixbee_save_meta_box_data')) {
         return;
     }
 
@@ -37,11 +33,9 @@ function fixbee_save_meta_box_data($post_id) {
         return;
     }
 
-    if (!isset($_POST['fixbee_text'])) {
-        return;
+    if (isset($_POST['fixbee_admin_email'])) {
+        $email = sanitize_email($_POST['fixbee_admin_email']);
+        update_option('fixbee_admin_email', $email);
     }
-
-    $texts = sanitize_text_field($_POST['fixbee_text']);
-    update_post_meta($post_id, '_fixbee_texts', $texts);
 }
 add_action('save_post', 'fixbee_save_meta_box_data');

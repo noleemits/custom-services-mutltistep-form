@@ -4,16 +4,25 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
+
+// Initialize session variables if not set
+$category = isset($_SESSION['fixbee_category']) ? $_SESSION['fixbee_category'] : '';
+$zip = isset($_SESSION['fixbee_zip']) ? $_SESSION['fixbee_zip'] : '';
+$company = isset($_SESSION['fixbee_company']) ? $_SESSION['fixbee_company'] : '';
+$full_name = isset($_SESSION['fixbee_full_name']) ? $_SESSION['fixbee_full_name'] : '';
+$phone = isset($_SESSION['fixbee_phone']) ? $_SESSION['fixbee_phone'] : '';
+$email = isset($_SESSION['fixbee_email']) ? $_SESSION['fixbee_email'] : '';
+
 ?>
 
 <form id="fixbee-step3-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
     <input type="hidden" name="action" value="fixbee_step3">
-    <input type="hidden" name="category" value="<?php echo esc_attr($_SESSION['fixbee_category']); ?>">
-    <input type="hidden" name="zip" value="<?php echo esc_attr($_SESSION['fixbee_zip']); ?>">
-    <input type="hidden" name="company" value="<?php echo esc_attr($_SESSION['fixbee_company']); ?>">
-    <input type="hidden" name="full_name" value="<?php echo esc_attr($_SESSION['fixbee_full_name']); ?>">
-    <input type="hidden" name="phone" value="<?php echo esc_attr($_SESSION['fixbee_phone']); ?>">
-    <input type="hidden" name="email" value="<?php echo esc_attr($_SESSION['fixbee_email']); ?>">
+    <input type="hidden" name="category" value="<?php echo esc_attr($category); ?>">
+    <input type="hidden" name="zip" value="<?php echo esc_attr($zip); ?>">
+    <input type="hidden" name="company" value="<?php echo esc_attr($company); ?>">
+    <input type="hidden" name="full_name" value="<?php echo esc_attr($full_name); ?>">
+    <input type="hidden" name="phone" value="<?php echo esc_attr($phone); ?>">
+    <input type="hidden" name="email" value="<?php echo esc_attr($email); ?>">
 
     <!-- Dynamically populated services list -->
     <div id="service-categories-container"></div>
@@ -23,7 +32,6 @@ session_start();
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        console.log('DOM fully loaded and parsed');
         const container = document.getElementById('service-categories-container');
         console.log('Container:', container);
 
@@ -93,3 +101,4 @@ session_start();
         });
     });
 </script>
+
