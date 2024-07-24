@@ -15,11 +15,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        fetch('/wp-json/myplugin/v1/services_by_category')
+        fetch('/wp-json/fixbee/v1/services_by_category')
             .then(response => response.json())
             .then(data => {
-                displayServices(data);
-            });
+                console.log(data); // Log the response for debugging
+                if (Array.isArray(data)) {
+                    displayServices(data);
+                } else {
+                    console.error('Expected an array but got:', data);
+                }
+            })
+            .catch(error => console.error('Error fetching services:', error));
 
         function displayServices(data) {
             const container = document.getElementById('service-categories-container');
