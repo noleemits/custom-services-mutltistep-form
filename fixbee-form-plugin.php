@@ -3,7 +3,7 @@
 Plugin Name: fixbee Form Plugin
 Description: A custom multi-step form for fixbee.
 Version: 1.0
-Author: Your Name
+Author: STephen Lee Hernandez
 */
 
 // Exit if accessed directly
