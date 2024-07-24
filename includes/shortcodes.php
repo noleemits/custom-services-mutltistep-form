@@ -22,3 +22,11 @@ function fixbee_form_step3() {
     return ob_get_clean();
 }
 add_shortcode('fixbee_form_step3', 'fixbee_form_step3');
+
+// Shortcode for Step 4 form
+function fixbee_form_step4() {
+    ob_start();
+    include FIXBEE_PLUGIN_DIR . 'templates/form-step4.php';
+    return ob_get_clean();
+}
+add_shortcode('fixbee_form_step4', 'fixbee_form_step4');
